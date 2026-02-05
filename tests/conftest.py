@@ -6,8 +6,8 @@ from table import Table
 
 
 @pytest.fixture
-def origin_point(robot: Robot) -> Point:
-    return Point(0, 0)
+def centre_point(robot: Robot) -> Point:
+    return Point(2, 2)
 
 
 @pytest.fixture
@@ -16,8 +16,8 @@ def robot():
 
 
 @pytest.fixture
-def placed_robot_north_facing(robot: Robot, origin_point: Point) -> Robot:
-    robot.place(origin_point, Direction.NORTH)
+def placed_robot_north_facing(robot: Robot, centre_point: Point) -> Robot:
+    robot.place(centre_point, Direction.NORTH)
     return robot
 
 

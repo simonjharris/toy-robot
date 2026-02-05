@@ -6,6 +6,7 @@ class Table:
     """A rectangular table surface for a robot to move on.
 
     The table uses a coordinate system where Point(0, 0) is the south-west corner.
+    Therefore, both values must be positive integers.
     """
 
     def __init__(
@@ -13,6 +14,9 @@ class Table:
         width: int = 5,
         height: int = 5,
     ):
+        if width <= 0 or height <= 0:
+            raise ValueError("width and height must be positive")
+
         self.width = width
         self.height = height
 

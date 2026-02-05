@@ -5,6 +5,20 @@ from table import Table
 
 
 class TestTable:
+    def test_table_init_rejects_negative_and_zero_width(self) -> None:
+        with pytest.raises(ValueError):
+            Table(width=0)
+
+        with pytest.raises(ValueError):
+            Table(width=-1)
+
+    def test_table_init_rejects_negative_and_zero_height(self) -> None:
+        with pytest.raises(ValueError):
+            Table(height=0)
+
+        with pytest.raises(ValueError):
+            Table(height=-1)
+
     @pytest.mark.parametrize(
         ["coordinate", "is_valid"],
         [

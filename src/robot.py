@@ -25,33 +25,45 @@ class Robot:
     }
 
     def __init__(self):
-        self.point: Point | None = None
-        self.direction: Direction | None = None
-        self.is_placed = False
+        self._point: Point | None = None
+        self._direction: Direction | None = None
+        self._is_placed = False
+
+    @property
+    def point(self) -> Point | None:
+        return self._point
+
+    @property
+    def direction(self) -> Direction | None:
+        return self._direction
+
+    @property
+    def is_placed(self) -> bool:
+        return self._is_placed
 
     def place(self, point: Point, direction: Direction) -> None:
-        self.point = point
-        self.direction = direction
-        self.is_placed = True
+        self._point = point
+        self._direction = direction
+        self._is_placed = True
 
     def turn_left(self) -> None:
-        if not self.is_placed:
+        if not self._is_placed:
             raise RobotNotPlacedError
 
-        self.direction = self.anti_clockwise_rotations[self.direction]
+        self._direction = self.anti_clockwise_rotations[self._direction]
 
     def turn_right(self) -> None:
-        if not self.is_placed:
+        if not self._is_placed:
             raise RobotNotPlacedError
 
-        self.direction = self.clockwise_rotations[self.direction]
+        self._direction = self.clockwise_rotations[self._direction]
 
     def move(self) -> None:
-        if not self.is_placed:
+        if not self._is_placed:
             raise RobotNotPlacedError
 
-        move_coordinate = self.move_coordinates[self.direction]
+        move_coordinate = self.move_coordinates[self._direction]
         new_position = Point(
-            self.point.x + move_coordinate[0], self.point.y + move_coordinate[1]
+            self._point.x + move_coordinate[0], self._point.y + move_coordinate[1]
         )
-        self.point = new_position
+        self._point = new_position
