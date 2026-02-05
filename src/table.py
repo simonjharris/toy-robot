@@ -25,4 +25,4 @@ class Table:
         Returns:
             bool: True if the point is valid, False otherwise.
         """
-        return 0 <= point.x < self.width and 0 < point.y <= self.height
+        return 0 <= point.x < self.width and 0 <= point.y < self.height
