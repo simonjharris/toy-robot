@@ -1,8 +1,9 @@
 import dataclasses
 import re
 from enum import StrEnum
+from typing import TextIO
 
-from data_classes import Direction
+from src.data_classes import Direction
 
 
 class CommandParserException(Exception):
@@ -23,6 +24,7 @@ class Command(StrEnum):
     REPORT = "REPORT"
     LEFT = "LEFT"
     RIGHT = "RIGHT"
+    EXIT = "EXIT"
 
 
 @dataclasses.dataclass
@@ -34,8 +36,7 @@ class PlaceCommand:
 
 class CommandParser:
     place_command_regex = re.compile(
-        r"^PLACE\s*([0-9]+),\s?([0-9]+),(NORTH|EAST|SOUTH|WEST)$",
-        re.IGNORECASE,
+        r"^PLACE\s([0-9]+),\s?([0-9]+),\s?(NORTH|EAST|SOUTH|WEST)$",
     )
 
     @classmethod
@@ -52,13 +53,10 @@ class CommandParser:
     def parse_command(cls, command: str) -> tuple[Command, PlaceCommand | None]:
         command_type = command.split(" ")[0]
 
-        if command_type in ("MOVE", "REPORT", "LEFT", "RIGHT"):
+        if command_type in ("MOVE", "REPORT", "LEFT", "RIGHT", "EXIT"):
             return Command[command_type], None
 
         if not command_type.startswith("PLACE"):
             raise InvalidCommandException
 
         return Command.PLACE, cls._parse_place_command_args(command)
-
-
-print(CommandParser.parse_command("MOVE"))

@@ -1,5 +1,4 @@
-from data_classes import Point
-from robot import Robot
+from src.data_classes import Point
 
 
 class Table:

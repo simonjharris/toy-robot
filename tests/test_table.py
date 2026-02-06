@@ -1,7 +1,7 @@
 import pytest
 
-from data_classes import Point
-from table import Table
+from src.data_classes import Point
+from src.table import Table
 
 
 class TestTable:
@@ -24,10 +24,10 @@ class TestTable:
         [
             [Point(0, 0), True],  # origin
             [Point(2, 2), True],  # centre
-            [Point(0, 5), False],  # too far north
-            [Point(5, 0), False],  # too far east
-            [Point(0, -1), False],  # too far south
-            [Point(-1, 0), False],  #  too far west
+            [Point(0, 5), False],  # out of bounds north
+            [Point(5, 0), False],  # out of bounds east
+            [Point(0, -1), False],  # out of bounds south
+            [Point(-1, 0), False],  #  out of bounds west
         ],
     )
     def test_is_point_valid(
