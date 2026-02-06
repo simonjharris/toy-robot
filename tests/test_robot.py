@@ -24,13 +24,14 @@ class TestRobot:
         """
         robot = placed_robot_north_facing
         starting_point = robot.point
+        assert starting_point is not None
         commands_to_return_to_starting_point = [robot.move, robot.turn_right] * 4
         expected_position_offset = [(0, 0), (0, 1), (1, 1), (1, 0), (0, 0)]
 
         path = [starting_point]
         for command in commands_to_return_to_starting_point:
             command()
-            if path[-1] != robot.point:
+            if path[-1] != robot.point and robot.point is not None:
                 path.append(robot.point)
 
         assert placed_robot_north_facing.direction == Direction.NORTH

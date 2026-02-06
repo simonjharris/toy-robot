@@ -4,7 +4,7 @@ import textwrap
 from importlib.metadata import PackageNotFoundError, version
 
 from toy_robot.robot import Robot
-from toy_robot.simulator import RobotSimulator, Signal
+from toy_robot.simulator import RobotSimulator
 from toy_robot.table import Table
 
 
@@ -15,7 +15,7 @@ def _get_version() -> str:
         return "dev"
 
 
-def main():
+def main() -> None:
     app_version = _get_version()
     arg_parser = argparse.ArgumentParser(
         description=f"Toy Robot Simulator v{app_version}",
@@ -28,7 +28,6 @@ def main():
               RIGHT                      : Turn the robot 90 degrees to the right.
               MOVE                       : Move the robot forward one place in the current direction of the robot.
               REPORT                     : Display the current state of the robot, i.e. its current x,y position and direction.
-              EXIT                       : Exit the simulator
             """,
         ),
     )
@@ -46,7 +45,7 @@ def main():
         print(
             f"Welcome to the Robot Simulator v{app_version}\n\n"
             "All commands should be in uppercase\n"
-            "Type EXIT or ctrl+c when you are done\n"
+            "Type ctrl+c when you are done\n"
             "Full command list can be seen by exiting and running this tool with the --help flag\n"
             "Enter a PLACE command to start:"
         )
@@ -54,15 +53,9 @@ def main():
             try:
                 user_command = input("> ")
                 output = simulator.process_command(user_command)
-                if output == Signal.EXIT:
-                    sys.exit(0)
                 if output:
                     print(output)
 
-            except KeyboardInterrupt:
+            except (KeyboardInterrupt, EOFError):
                 # exit gracefully if using ctrl+c
                 sys.exit(0)
-
-
-if __name__ == "__main__":
-    main()

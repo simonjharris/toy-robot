@@ -3,7 +3,7 @@ import io
 import pytest
 
 from toy_robot.data_classes import Direction, Point
-from toy_robot.simulator import RobotSimulator, Signal
+from toy_robot.simulator import RobotSimulator
 
 
 class TestRobotSimulator:
@@ -64,7 +64,9 @@ class TestRobotSimulator:
     ) -> None:
         simulator = robot_simulator_placed_robot
         position = simulator.robot.point
+        assert position is not None
         direction = simulator.robot.direction
+        assert direction is not None
         output = simulator.process_command("REPORT")
         assert output == f"{position.x},{position.y},{direction.name}"
 
@@ -96,26 +98,41 @@ class TestRobotSimulator:
         simulator.process_command(invalid_place_command)
         assert simulator.robot.is_placed is False
 
-    def test_process_command_exit_success(
-        self, robot_simulator_unplaced_robot: RobotSimulator
+    @pytest.mark.parametrize(
+        ["place_command", "expected_report"],
+        [
+            ["PLACE 0,4,NORTH", "0,4,NORTH"],  # north edge
+            ["PLACE 4,0,EAST", "4,0,EAST"],  # east edge
+            ["PLACE 0,0,SOUTH", "0,0,SOUTH"],  # south edge
+            ["PLACE 0,0,WEST", "0,0,WEST"],  # west edge
+        ],
+    )
+    def test_move_at_boundary_is_ignored(
+        self,
+        place_command: str,
+        expected_report: str,
+        robot_simulator_unplaced_robot: RobotSimulator,
     ) -> None:
         simulator = robot_simulator_unplaced_robot
-        assert simulator.process_command("EXIT") is Signal.EXIT
+        simulator.process_command(place_command)
+        simulator.process_command("MOVE")
+        assert simulator.process_command("REPORT") == expected_report
 
 
 class TestCommandFileParser:
-    def test_process_commands(self, robot_simulator_unplaced_robot):
+    def test_process_commands_example_c(self, robot_simulator_unplaced_robot: RobotSimulator):
+        """Problem spec example c: place, move, turn, move, report."""
         commands = "\n".join(
             [
-                "REPORT",  # ignored - robot not yet placed
-                "PLACE 1,1,SOUTH",
-                "MOVE",  # 1,0,SOUTH
-                "RIGHT",  # 1,0,WEST
-                "MOVE",  # 0,0,WEST
-                "REPORT",  # outputs "0,0,WEST"
+                "PLACE 1,2,EAST",
+                "MOVE",   # 2,2,EAST
+                "MOVE",   # 3,2,EAST
+                "LEFT",   # 3,2,NORTH
+                "MOVE",   # 3,3,NORTH
+                "REPORT",
             ]
         )
         file_like_input = io.StringIO(commands)
         simulator = robot_simulator_unplaced_robot
         result = simulator.process_commands(file_like_input)
-        assert result == "0,0,WEST"
+        assert result == "3,3,NORTH"

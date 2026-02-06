@@ -22,7 +22,6 @@ class TestCommandParser:
             ["REPORT", (Command.REPORT, None)],
             ["LEFT", (Command.LEFT, None)],
             ["RIGHT", (Command.RIGHT, None)],
-            ["EXIT", (Command.EXIT, None)],
             [
                 "PLACE 1,1,NORTH",
                 (Command.PLACE, PlaceCommandArgs(x=1, y=1, facing=Direction.NORTH)),

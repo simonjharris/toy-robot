@@ -1,4 +1,3 @@
-from enum import Enum, auto
 from typing import TextIO
 
 from toy_robot.commands import (
@@ -8,12 +7,8 @@ from toy_robot.commands import (
     PlaceCommandArgs,
 )
 from toy_robot.data_classes import Point
-from toy_robot.robot import Robot
+from toy_robot.robot import Robot, RobotNotPlacedError
 from toy_robot.table import Table
-
-
-class Signal(Enum):
-    EXIT = auto()
 
 
 class RobotSimulator:
@@ -23,7 +18,7 @@ class RobotSimulator:
 
     def _execute(
         self, command: Command, place_args: PlaceCommandArgs | None = None
-    ) -> str | Signal | None:
+    ) -> str | None:
         match command:
             case Command.PLACE:
                 self._handle_place(place_args)
@@ -35,8 +30,6 @@ class RobotSimulator:
                 self._handle_right()
             case Command.REPORT:
                 return self._handle_report()
-            case Command.EXIT:
-                return Signal.EXIT
         return None
 
     def _handle_place(self, args: PlaceCommandArgs | None) -> None:
@@ -47,26 +40,29 @@ class RobotSimulator:
             self.robot.place(point, args.facing)
 
     def _handle_move(self) -> None:
-        if not self.robot.is_placed:
-            return
-        candidate_position = self.robot.next_position()
-        if self.table.is_valid_point(candidate_position):
-            self.robot.move()
+        try:
+            candidate_position = self.robot.next_position()
+            if self.table.is_valid_point(candidate_position):
+                self.robot.move()
+        except RobotNotPlacedError:
+            return None
 
     def _handle_left(self) -> None:
-        if not self.robot.is_placed:
-            return
-        self.robot.turn_left()
+        try:
+            self.robot.turn_left()
+        except RobotNotPlacedError:
+            return None
 
     def _handle_right(self) -> None:
-        if not self.robot.is_placed:
-            return
-        self.robot.turn_right()
+        try:
+            self.robot.turn_right()
+        except RobotNotPlacedError:
+            return None
 
     def _handle_report(self) -> str | None:
         return str(self.robot) if self.robot.is_placed else None
 
-    def process_command(self, line: str) -> str | Signal | None:
+    def process_command(self, line: str) -> str | None:
         try:
             command, place_args = CommandParser.parse_command(line.rstrip())
             return self._execute(command, place_args)
@@ -77,7 +73,7 @@ class RobotSimulator:
         output_lines = []
         for line in file_contents:
             result = self.process_command(line)
-            if result is not None and not isinstance(result, Signal):
+            if result is not None:
                 output_lines.append(result)
 
         return "\n".join(output_lines) if output_lines else None

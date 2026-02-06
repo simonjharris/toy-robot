@@ -23,7 +23,6 @@ class Command(StrEnum):
     REPORT = "REPORT"
     LEFT = "LEFT"
     RIGHT = "RIGHT"
-    EXIT = "EXIT"
 
 
 @dataclasses.dataclass
@@ -35,7 +34,7 @@ class PlaceCommandArgs:
 
 class CommandParser:
     place_command_regex = re.compile(
-        r"^PLACE\s([0-9]+),\s?([0-9]+),\s?(NORTH|EAST|SOUTH|WEST)$",
+        r"^PLACE\s([0-9]+),\s?([0-9]+),\s?(NORTH|EAST|SOUTH|WEST)\s*$",
     )
 
     @classmethod
@@ -52,7 +51,7 @@ class CommandParser:
     def parse_command(cls, command: str) -> tuple[Command, PlaceCommandArgs | None]:
         command_type = command.split(" ")[0]
 
-        if command_type in ("MOVE", "REPORT", "LEFT", "RIGHT", "EXIT"):
+        if command_type in ("MOVE", "REPORT", "LEFT", "RIGHT"):
             return Command[command_type], None
 
         if not command_type.startswith("PLACE"):

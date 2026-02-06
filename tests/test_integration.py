@@ -4,12 +4,15 @@ from unittest.mock import patch
 
 import pytest
 
-from main import main
+from toy_robot.cli import main
 
 
 class TestInteractiveMode:
-    @patch("builtins.input", side_effect=["PLACE 1,2,NORTH", "MOVE", "REPORT", "EXIT"])
-    @patch("sys.argv", ["main"])
+    @patch(
+        "builtins.input",
+        side_effect=["PLACE 1,2,NORTH", "MOVE", "REPORT", KeyboardInterrupt],
+    )
+    @patch("sys.argv", ["toy-robot"])
     def test_process_commands_and_report(self, mock_input, capsys):
         with pytest.raises(SystemExit):
             main()
@@ -17,16 +20,16 @@ class TestInteractiveMode:
         captured = capsys.readouterr()
         assert "1,3,NORTH" in captured.out
 
-    @patch("builtins.input", side_effect=["EXIT"])
-    @patch("sys.argv", ["main"])
-    def test_exit_command(self, mock_input):
+    @patch("builtins.input", side_effect=KeyboardInterrupt)
+    @patch("sys.argv", ["toy-robot"])
+    def test_ctrl_c_exits_cleanly(self, mock_input):
         with pytest.raises(SystemExit) as exc_info:
             main()
 
         assert exc_info.value.code == 0
 
-    @patch("builtins.input", side_effect=["EXIT"])
-    @patch("sys.argv", ["main"])
+    @patch("builtins.input", side_effect=KeyboardInterrupt)
+    @patch("sys.argv", ["toy-robot"])
     def test_welcome_message(self, mock_input, capsys):
         with pytest.raises(SystemExit):
             main()
@@ -36,7 +39,7 @@ class TestInteractiveMode:
 
 
 class TestHelp:
-    @patch("sys.argv", ["main", "--help"])
+    @patch("sys.argv", ["toy-robot", "--help"])
     def test_help_flag(self, capsys):
         with pytest.raises(SystemExit) as exc_info:
             main()
@@ -52,7 +55,7 @@ class TestFileMode:
         command_file = tmp_path / "commands.txt"
         command_file.write_text("PLACE 0,0,NORTH\nREPORT\n")
 
-        with patch("sys.argv", ["main", "-f", str(command_file)]):
+        with patch("sys.argv", ["toy-robot", "-f", str(command_file)]):
             main()
 
         captured = capsys.readouterr()
@@ -62,7 +65,7 @@ class TestFileMode:
         command_file = tmp_path / "commands.txt"
         command_file.write_text("PLACE 0,0,NORTH\nREPORT\nMOVE\nREPORT\n")
 
-        with patch("sys.argv", ["main", "-f", str(command_file)]):
+        with patch("sys.argv", ["toy-robot", "-f", str(command_file)]):
             main()
 
         captured = capsys.readouterr()
@@ -72,7 +75,7 @@ class TestFileMode:
         command_file = tmp_path / "commands.txt"
         command_file.write_text("MOVE\nLEFT\nRIGHT\nREPORT\nPLACE 1,1,EAST\nREPORT\n")
 
-        with patch("sys.argv", ["main", "-f", str(command_file)]):
+        with patch("sys.argv", ["toy-robot", "-f", str(command_file)]):
             main()
 
         captured = capsys.readouterr()
@@ -82,7 +85,7 @@ class TestFileMode:
         command_file = tmp_path / "commands.txt"
         command_file.write_text("PLACE 0,0,NORTH\nFOO\nBAR\nREPORT\n")
 
-        with patch("sys.argv", ["main", "-f", str(command_file)]):
+        with patch("sys.argv", ["toy-robot", "-f", str(command_file)]):
             main()
 
         captured = capsys.readouterr()
@@ -90,7 +93,7 @@ class TestFileMode:
 
     def test_nonexistent_file(self):
         with (
-            patch("sys.argv", ["main", "-f", "nonexistent.txt"]),
+            patch("sys.argv", ["toy-robot", "-f", "nonexistent.txt"]),
             pytest.raises(FileNotFoundError),
         ):
             main()
@@ -102,7 +105,7 @@ class TestSubprocess:
         command_file.write_text("PLACE 2,3,WEST\nMOVE\nREPORT\n")
 
         result = subprocess.run(
-            [sys.executable, "main.py", "-f", str(command_file)],
+            [sys.executable, "-m", "toy_robot", "-f", str(command_file)],
             capture_output=True,
             text=True,
         )
@@ -112,8 +115,8 @@ class TestSubprocess:
 
     def test_interactive_mode_end_to_end(self):
         result = subprocess.run(
-            [sys.executable, "main.py"],
-            input="PLACE 0,0,NORTH\nMOVE\nREPORT\nEXIT\n",
+            [sys.executable, "-m", "toy_robot"],
+            input="PLACE 0,0,NORTH\nMOVE\nREPORT\n",
             capture_output=True,
             text=True,
         )

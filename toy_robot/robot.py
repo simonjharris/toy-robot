@@ -34,7 +34,7 @@ class Robot:
         self._direction: Direction | None = None
 
     def __str__(self) -> str:
-        if self.point and self.direction:
+        if self.point is not None and self.direction is not None:
             return f"{self.point.x},{self.point.y},{self.direction.name}"
         else:
             return "Unplaced Robot"

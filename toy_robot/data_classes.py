@@ -1,5 +1,5 @@
 import dataclasses
-from enum import Enum, StrEnum, auto
+from enum import Enum, auto
 
 
 class Direction(Enum):

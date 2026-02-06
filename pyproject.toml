@@ -8,6 +8,9 @@ authors = [
 ]
 dependencies = []
 
+[project.scripts]
+toy-robot = "toy_robot.cli:main"
+
 [dependency-groups]
 dev = [
     "mypy>=1.19.1",

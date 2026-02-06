@@ -7,26 +7,47 @@ A simulation of a toy robot moving on a 5x5 square tabletop.
 - Python 3.13
 - [`uv`](https://docs.astral.sh/uv/getting-started/installation/) (dev dependencies)
 
-## Setup
+## Development Setup
 
-No dependencies are required to run the application. For development tools (pytest, mypy, ruff):
+For running tests, type checking, and linting:
 
 ```bash
 uv sync
 ```
 
+### Testing
+
+```bash
+pytest
+```
+
+With coverage:
+
+```bash
+pytest --cov --cov-report=term
+```
+
+### Type Checking and Linting
+
+```bash
+uv run mypy .
+uv run ruff check .
+```
+
 ## Usage
+
+The tool uses only the standard library, so there's no need for a virtual environment.
 
 Interactive mode:
 
 ```bash
-python main.py
+python -m toy_robot
 ```
 
 File mode:
 
 ```bash
-python main.py -f commands.txt
+python -m toy_robot -f commands.txt
 ```
 
 ### Commands
@@ -38,16 +59,17 @@ python main.py -f commands.txt
 | `LEFT`                | Rotate 90 degrees left                                            |
 | `RIGHT`               | Rotate 90 degrees right                                           |
 | `REPORT`              | Output the current position and direction                         |
-| `EXIT`                | Exit the simulator                                                |
 
-## Testing
+### Example
 
-```bash
-pytest
+```
+PLACE 1,2,EAST
+MOVE
+MOVE
+LEFT
+MOVE
+REPORT
 ```
 
-With coverage:
+Output: `3,3,NORTH`
 
-```bash
-pytest --cov --cov-report=term
-```
