@@ -33,6 +33,12 @@ class Robot:
         self._point: Point | None = None
         self._direction: Direction | None = None
 
+    def __str__(self) -> str:
+        if self.point and self.direction:
+            return f"{self.point.x},{self.point.y},{self.direction.name}"
+        else:
+            return "Unplaced Robot"
+
     @property
     def point(self) -> Point | None:
         return self._point
