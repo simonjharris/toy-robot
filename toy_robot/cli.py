@@ -2,6 +2,7 @@ import argparse
 import sys
 import textwrap
 from importlib.metadata import PackageNotFoundError, version
+from pathlib import Path
 
 from toy_robot.robot import Robot
 from toy_robot.simulator import RobotSimulator
@@ -31,13 +32,19 @@ def main() -> None:
             """,
         ),
     )
-    arg_parser.add_argument("-f", "--file", help="path to file containing commands")
+    arg_parser.add_argument(
+        "-f", "--file", help="path to file containing commands", type=Path
+    )
 
     simulator = RobotSimulator(robot=Robot(), table=Table())
 
     args = arg_parser.parse_args()
-    if args.file:
-        with open(args.file, "r") as command_file:
+    if file := args.file:
+        if not file.exists():
+            print(f"File {file} not found")
+            print("Please verify the file path and try again")
+            sys.exit(1)
+        with open(file, "r") as command_file:
             if output := simulator.process_commands(command_file):
                 print(output)
 

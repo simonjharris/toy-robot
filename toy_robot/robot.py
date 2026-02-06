@@ -30,18 +30,18 @@ class Robot:
     }
 
     def __init__(self) -> None:
-        self._point: Point | None = None
+        self._position: Point | None = None
         self._direction: Direction | None = None
 
     def __str__(self) -> str:
-        if self.point is not None and self.direction is not None:
-            return f"{self.point.x},{self.point.y},{self.direction.name}"
+        if self.position is not None and self.direction is not None:
+            return f"{self.position.x},{self.position.y},{self.direction.name}"
         else:
             return "Unplaced Robot"
 
     @property
-    def point(self) -> Point | None:
-        return self._point
+    def position(self) -> Point | None:
+        return self._position
 
     @property
     def direction(self) -> Direction | None:
@@ -49,10 +49,10 @@ class Robot:
 
     @property
     def is_placed(self) -> bool:
-        return self._point is not None and self._direction is not None
+        return self._position is not None and self._direction is not None
 
-    def place(self, point: Point, direction: Direction) -> None:
-        self._point = point
+    def place(self, position: Point, direction: Direction) -> None:
+        self._position = position
         self._direction = direction
 
     def turn_left(self) -> None:
@@ -68,11 +68,11 @@ class Robot:
         self._direction = self.clockwise_rotations[self._direction]
 
     def next_position(self) -> Point:
-        if self._point is None or self._direction is None:
+        if self._position is None or self._direction is None:
             raise RobotNotPlacedError
 
         dx, dy = self.direction_deltas[self._direction]
-        return Point(self._point.x + dx, self._point.y + dy)
+        return Point(self._position.x + dx, self._position.y + dy)
 
     def move(self) -> None:
-        self._point = self.next_position()
+        self._position = self.next_position()

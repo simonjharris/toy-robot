@@ -9,7 +9,7 @@ class Direction(Enum):
     WEST = auto()
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(frozen=True)
 class Point:
     x: int
     y: int

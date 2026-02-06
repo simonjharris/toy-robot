@@ -11,12 +11,12 @@ class TestRobotSimulator:
         self, robot_simulator_placed_robot: RobotSimulator
     ) -> None:
         simulator = robot_simulator_placed_robot
-        starting_position = simulator.robot.point
+        starting_position = simulator.robot.position
         next_position = simulator.robot.next_position()
 
         simulator.process_command("MOVE")
 
-        new_position = simulator.robot.point
+        new_position = simulator.robot.position
         assert new_position != starting_position
         assert new_position == next_position
 
@@ -24,10 +24,10 @@ class TestRobotSimulator:
         self, robot_simulator_unplaced_robot: RobotSimulator
     ) -> None:
         simulator = robot_simulator_unplaced_robot
-        assert simulator.robot.point is None
+        assert simulator.robot.position is None
         result = simulator.process_command("MOVE")
         assert result is None
-        assert simulator.robot.point is None
+        assert simulator.robot.position is None
 
     @pytest.mark.parametrize(
         ["text_command", "expected_facing_direction"],
@@ -63,7 +63,7 @@ class TestRobotSimulator:
         self, robot_simulator_placed_robot: RobotSimulator
     ) -> None:
         simulator = robot_simulator_placed_robot
-        position = simulator.robot.point
+        position = simulator.robot.position
         assert position is not None
         direction = simulator.robot.direction
         assert direction is not None
@@ -85,7 +85,21 @@ class TestRobotSimulator:
         simulator.process_command("PLACE 0,0,SOUTH")
         assert simulator.robot.is_placed is True
         assert simulator.robot.direction == Direction.SOUTH
-        assert simulator.robot.point == Point(0, 0)
+        assert simulator.robot.position == Point(0, 0)
+
+    def test_process_command_replace_success(
+        self, robot_simulator_unplaced_robot: RobotSimulator
+    ) -> None:
+        simulator = robot_simulator_unplaced_robot
+        assert simulator.robot.is_placed is False
+        simulator.process_command("PLACE 0,0,SOUTH")
+        assert simulator.robot.is_placed is True
+        assert simulator.robot.direction == Direction.SOUTH
+        assert simulator.robot.position == Point(0, 0)
+        simulator.process_command("PLACE 1,1,NORTH")
+        assert simulator.robot.is_placed is True
+        assert simulator.robot.direction == Direction.NORTH
+        assert simulator.robot.position == Point(1, 1)
 
     @pytest.mark.parametrize("invalid_place_command", ["PLACE X,Y,INVALID", "PLACE"])
     def test_process_command_invalid_has_no_effect(
@@ -120,15 +134,17 @@ class TestRobotSimulator:
 
 
 class TestCommandFileParser:
-    def test_process_commands_example_c(self, robot_simulator_unplaced_robot: RobotSimulator):
+    def test_process_commands_example_c(
+        self, robot_simulator_unplaced_robot: RobotSimulator
+    ) -> None:
         """Problem spec example c: place, move, turn, move, report."""
         commands = "\n".join(
             [
                 "PLACE 1,2,EAST",
-                "MOVE",   # 2,2,EAST
-                "MOVE",   # 3,2,EAST
-                "LEFT",   # 3,2,NORTH
-                "MOVE",   # 3,3,NORTH
+                "MOVE",  # 2,2,EAST
+                "MOVE",  # 3,2,EAST
+                "LEFT",  # 3,2,NORTH
+                "MOVE",  # 3,3,NORTH
                 "REPORT",
             ]
         )

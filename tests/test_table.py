@@ -33,4 +33,4 @@ class TestTable:
     def test_is_point_valid(
         self, five_unit_square_table: Table, coordinate: Point, is_valid: bool
     ) -> None:
-        assert five_unit_square_table.is_valid_point(coordinate) == is_valid
+        assert five_unit_square_table.is_valid_position(coordinate) == is_valid

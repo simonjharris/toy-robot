@@ -19,13 +19,13 @@ class Table:
         self.width = width
         self.height = height
 
-    def is_valid_point(self, point: Point) -> bool:
+    def is_valid_position(self, position: Point) -> bool:
         """Check if a point is valid. I.e. not outside the bounds of the table.
 
         Args:
-            point (Point): The point to be checked.
+            position (Point): The point to be checked.
 
         Returns:
             bool: True if the point is valid, False otherwise.
         """
-        return 0 <= point.x < self.width and 0 <= point.y < self.height
+        return 0 <= position.x < self.width and 0 <= position.y < self.height

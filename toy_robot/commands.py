@@ -1,6 +1,6 @@
 import dataclasses
 import re
-from enum import StrEnum
+from enum import Enum, auto
 
 from toy_robot.data_classes import Direction
 
@@ -17,12 +17,12 @@ class InvalidPlaceException(CommandParserException):
     pass
 
 
-class Command(StrEnum):
-    PLACE = "PLACE"
-    MOVE = "MOVE"
-    REPORT = "REPORT"
-    LEFT = "LEFT"
-    RIGHT = "RIGHT"
+class Command(Enum):
+    PLACE = auto()
+    MOVE = auto()
+    REPORT = auto()
+    LEFT = auto()
+    RIGHT = auto()
 
 
 @dataclasses.dataclass

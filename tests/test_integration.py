@@ -1,6 +1,8 @@
 import subprocess
 import sys
-from unittest.mock import patch
+from pathlib import Path
+from typing import Any
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -13,7 +15,9 @@ class TestInteractiveMode:
         side_effect=["PLACE 1,2,NORTH", "MOVE", "REPORT", KeyboardInterrupt],
     )
     @patch("sys.argv", ["toy-robot"])
-    def test_process_commands_and_report(self, mock_input, capsys):
+    def test_process_commands_and_report(
+        self, mock_input: MagicMock, capsys: Any
+    ) -> None:
         with pytest.raises(SystemExit):
             main()
 
@@ -22,7 +26,7 @@ class TestInteractiveMode:
 
     @patch("builtins.input", side_effect=KeyboardInterrupt)
     @patch("sys.argv", ["toy-robot"])
-    def test_ctrl_c_exits_cleanly(self, mock_input):
+    def test_ctrl_c_exits_cleanly(self, mock_input: MagicMock) -> None:
         with pytest.raises(SystemExit) as exc_info:
             main()
 
@@ -30,7 +34,7 @@ class TestInteractiveMode:
 
     @patch("builtins.input", side_effect=KeyboardInterrupt)
     @patch("sys.argv", ["toy-robot"])
-    def test_welcome_message(self, mock_input, capsys):
+    def test_welcome_message(self, mock_input: MagicMock, capsys: Any) -> None:
         with pytest.raises(SystemExit):
             main()
 
@@ -40,7 +44,7 @@ class TestInteractiveMode:
 
 class TestHelp:
     @patch("sys.argv", ["toy-robot", "--help"])
-    def test_help_flag(self, capsys):
+    def test_help_flag(self, capsys: Any) -> None:
         with pytest.raises(SystemExit) as exc_info:
             main()
 
@@ -51,7 +55,7 @@ class TestHelp:
 
 
 class TestFileMode:
-    def test_process_command_file(self, tmp_path, capsys):
+    def test_process_command_file(self, tmp_path: Path, capsys: Any) -> None:
         command_file = tmp_path / "commands.txt"
         command_file.write_text("PLACE 0,0,NORTH\nREPORT\n")
 
@@ -61,7 +65,7 @@ class TestFileMode:
         captured = capsys.readouterr()
         assert captured.out.strip() == "0,0,NORTH"
 
-    def test_multiple_reports(self, tmp_path, capsys):
+    def test_multiple_reports(self, tmp_path: Path, capsys: Any) -> None:
         command_file = tmp_path / "commands.txt"
         command_file.write_text("PLACE 0,0,NORTH\nREPORT\nMOVE\nREPORT\n")
 
@@ -71,7 +75,7 @@ class TestFileMode:
         captured = capsys.readouterr()
         assert captured.out.strip() == "0,0,NORTH\n0,1,NORTH"
 
-    def test_commands_before_place_ignored(self, tmp_path, capsys):
+    def test_commands_before_place_ignored(self, tmp_path: Path, capsys: Any) -> None:
         command_file = tmp_path / "commands.txt"
         command_file.write_text("MOVE\nLEFT\nRIGHT\nREPORT\nPLACE 1,1,EAST\nREPORT\n")
 
@@ -81,7 +85,7 @@ class TestFileMode:
         captured = capsys.readouterr()
         assert captured.out.strip() == "1,1,EAST"
 
-    def test_invalid_commands_skipped(self, tmp_path, capsys):
+    def test_invalid_commands_skipped(self, tmp_path: Path, capsys: Any) -> None:
         command_file = tmp_path / "commands.txt"
         command_file.write_text("PLACE 0,0,NORTH\nFOO\nBAR\nREPORT\n")
 
@@ -91,16 +95,9 @@ class TestFileMode:
         captured = capsys.readouterr()
         assert captured.out.strip() == "0,0,NORTH"
 
-    def test_nonexistent_file(self):
-        with (
-            patch("sys.argv", ["toy-robot", "-f", "nonexistent.txt"]),
-            pytest.raises(FileNotFoundError),
-        ):
-            main()
-
 
 class TestSubprocess:
-    def test_file_mode_end_to_end(self, tmp_path):
+    def test_file_mode_end_to_end(self, tmp_path: Path) -> None:
         command_file = tmp_path / "commands.txt"
         command_file.write_text("PLACE 2,3,WEST\nMOVE\nREPORT\n")
 
@@ -113,7 +110,7 @@ class TestSubprocess:
         assert result.returncode == 0
         assert "1,3,WEST" in result.stdout
 
-    def test_interactive_mode_end_to_end(self):
+    def test_interactive_mode_end_to_end(self) -> None:
         result = subprocess.run(
             [sys.executable, "-m", "toy_robot"],
             input="PLACE 0,0,NORTH\nMOVE\nREPORT\n",
@@ -123,3 +120,13 @@ class TestSubprocess:
 
         assert result.returncode == 0
         assert "0,1,NORTH" in result.stdout
+
+    def test_non_existent_file_error(self) -> None:
+        non_existent_file = "invalid.txt"
+        result = subprocess.run(
+            [sys.executable, "-m", "toy_robot", "-f", non_existent_file],
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode == 1
+        assert "not found" in result.stdout

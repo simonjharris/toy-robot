@@ -73,3 +73,8 @@ REPORT
 
 Output: `3,3,NORTH`
 
+## Invalid Commands
+
+Currently invalid commands fail silently. This will make it difficult to debug if
+the robot is not behaving as expected. More thought should be given how we can improve the UX here.
+
