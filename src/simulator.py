@@ -1,4 +1,4 @@
-import sys
+from enum import Enum, auto
 from typing import TextIO
 
 from src.commands import (
@@ -8,8 +8,12 @@ from src.commands import (
     PlaceCommandArgs,
 )
 from src.data_classes import Point
-from src.robot import Robot, RobotNotPlacedError
+from src.robot import Robot
 from src.table import Table
+
+
+class Signal(Enum):
+    EXIT = auto()
 
 
 class RobotSimulator:
@@ -19,7 +23,7 @@ class RobotSimulator:
 
     def _execute(
         self, command: Command, place_args: PlaceCommandArgs | None = None
-    ) -> str | None:
+    ) -> str | Signal | None:
         match command:
             case Command.PLACE:
                 self._handle_place(place_args)
@@ -32,7 +36,7 @@ class RobotSimulator:
             case Command.REPORT:
                 return self._handle_report()
             case Command.EXIT:
-                self._handle_exit()
+                return Signal.EXIT
         return None
 
     def _handle_place(self, args: PlaceCommandArgs | None) -> None:
@@ -43,38 +47,37 @@ class RobotSimulator:
             self.robot.place(point, args.facing)
 
     def _handle_move(self) -> None:
-        try:
-            candidate_position = self.robot.next_position()
-            if self.table.is_valid_point(candidate_position):
-                self.robot.move()
-        except RobotNotPlacedError:
-            pass
+        if not self.robot.is_placed:
+            return
+        candidate_position = self.robot.next_position()
+        if self.table.is_valid_point(candidate_position):
+            self.robot.move()
 
     def _handle_left(self) -> None:
-        try:
-            self.robot.turn_left()
-        except RobotNotPlacedError:
-            pass
+        if not self.robot.is_placed:
+            return
+        self.robot.turn_left()
 
     def _handle_right(self) -> None:
-        try:
-            self.robot.turn_right()
-        except RobotNotPlacedError:
-            pass
+        if not self.robot.is_placed:
+            return
+        self.robot.turn_right()
 
     def _handle_report(self) -> str | None:
         return str(self.robot) if self.robot.is_placed else None
 
-    def _handle_exit(self) -> None:
-        sys.exit(0)
-
-    def process_line(self, line: str) -> str | None:
+    def process_command(self, line: str) -> str | Signal | None:
         try:
-            command, place_args = CommandParser.parse_command(line.strip())
+            command, place_args = CommandParser.parse_command(line.rstrip())
             return self._execute(command, place_args)
         except CommandParserException:
             return None
 
-    def process_file(self, file_contents: TextIO) -> None:
+    def process_commands(self, file_contents: TextIO) -> str | None:
+        output_lines = []
         for line in file_contents:
-            self.process_line(line)
+            result = self.process_command(line)
+            if result is not None and not isinstance(result, Signal):
+                output_lines.append(result)
+
+        return "\n".join(output_lines) if output_lines else None

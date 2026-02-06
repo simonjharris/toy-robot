@@ -34,7 +34,7 @@ def placed_robot_north_facing(
 def robot_simulator_unplaced_robot(
     unplaced_robot: Robot,
     five_unit_square_table: Table,
-) -> Robot:
+) -> RobotSimulator:
     return RobotSimulator(
         robot=unplaced_robot,
         table=five_unit_square_table,
@@ -45,7 +45,7 @@ def robot_simulator_unplaced_robot(
 def robot_simulator_placed_robot(
     placed_robot_north_facing: Robot,
     five_unit_square_table: Table,
-) -> Robot:
+) -> RobotSimulator:
     return RobotSimulator(
         robot=placed_robot_north_facing,
         table=five_unit_square_table,

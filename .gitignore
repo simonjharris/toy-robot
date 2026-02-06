@@ -2,3 +2,5 @@
 .idea/
 htmlcov/
 .coverage
+__pycache__/
+.pytest_cache/

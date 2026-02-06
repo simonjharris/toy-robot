@@ -1,5 +1,3 @@
-from typing import Type
-
 import pytest
 
 from src.commands import (
@@ -50,6 +48,8 @@ class TestCommandParser:
             "    REPORT",
             "left",
             "right",
+            "FOO",
+            "BAR",
         ],
     )
     def test_parse_command_invalid_raises_exception(self, text_command: str) -> None:
@@ -71,7 +71,7 @@ class TestCommandParser:
     def test_parse_command_place_invalid_raises_exception(
         self,
         text_command: str,
-        expected_exception: Type[Exception],
+        expected_exception: type[Exception],
     ) -> None:
         with pytest.raises(expected_exception):
             CommandParser.parse_command(text_command)
