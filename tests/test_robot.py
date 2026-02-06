@@ -16,7 +16,9 @@ class TestRobot:
         )
         assert placed_robot_north_facing.direction == Direction.NORTH
 
-    def test_clockwise_circle_returns_to_origin(self, placed_robot_north_facing: Robot):
+    def test_clockwise_circle_returns_to_origin(
+        self, placed_robot_north_facing: Robot
+    ) -> None:
         """Test that after a full CW circle (4 moves and 4 turns)
         the robot is in the same state as when starting
         """
@@ -39,7 +41,7 @@ class TestRobot:
 
     def test_anti_clockwise_circle_returns_to_origin(
         self, placed_robot_north_facing: Robot
-    ):
+    ) -> None:
         """Test that after a full ACW circle (4 moves and 4 turns)
         the robot is in the same state as when starting
         """
@@ -85,3 +87,15 @@ class TestRobot:
     ) -> None:
         with pytest.raises(RobotNotPlacedError):
             unplaced_robot.next_position()
+
+    def test_robot_is_placed(self, unplaced_robot: Robot) -> None:
+        robot = unplaced_robot
+        assert unplaced_robot.is_placed is False
+        robot.place(Point(0, 0), Direction.NORTH)
+        assert unplaced_robot.is_placed is True
+
+    def test_robot_string_representation(self, unplaced_robot: Robot) -> None:
+        robot = unplaced_robot
+        assert str(robot) == "Unplaced Robot"
+        robot.place(Point(0, 0), Direction.NORTH)
+        assert str(robot) == "0,0,NORTH"

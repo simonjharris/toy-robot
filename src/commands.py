@@ -1,7 +1,6 @@
 import dataclasses
 import re
 from enum import StrEnum
-from typing import TextIO
 
 from src.data_classes import Direction
 
@@ -28,7 +27,7 @@ class Command(StrEnum):
 
 
 @dataclasses.dataclass
-class PlaceCommand:
+class PlaceCommandArgs:
     x: int
     y: int
     facing: Direction
@@ -40,17 +39,17 @@ class CommandParser:
     )
 
     @classmethod
-    def _parse_place_command_args(cls, command: str) -> PlaceCommand:
+    def _parse_place_command_args(cls, command: str) -> PlaceCommandArgs:
         if not (match := re.match(cls.place_command_regex, command)):
             raise InvalidPlaceException
 
         x = int(match.group(1))
         y = int(match.group(2))
         direction = Direction[match.group(3).upper()]
-        return PlaceCommand(x, y, direction)
+        return PlaceCommandArgs(x, y, direction)
 
     @classmethod
-    def parse_command(cls, command: str) -> tuple[Command, PlaceCommand | None]:
+    def parse_command(cls, command: str) -> tuple[Command, PlaceCommandArgs | None]:
         command_type = command.split(" ")[0]
 
         if command_type in ("MOVE", "REPORT", "LEFT", "RIGHT", "EXIT"):
