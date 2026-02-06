@@ -1,7 +1,7 @@
 import pytest
 
-from src.data_classes import Direction, Point
-from src.robot import Robot, RobotNotPlacedError
+from toy_robot.data_classes import Direction, Point
+from toy_robot.robot import Robot, RobotNotPlacedError
 
 
 class TestRobot:

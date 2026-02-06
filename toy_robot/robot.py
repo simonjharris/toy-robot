@@ -1,4 +1,4 @@
-from src.data_classes import Direction, Point
+from toy_robot.data_classes import Direction, Point
 
 
 class RobotError(Exception):

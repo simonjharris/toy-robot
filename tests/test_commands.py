@@ -1,13 +1,13 @@
 import pytest
 
-from src.commands import (
+from toy_robot.commands import (
     Command,
     CommandParser,
     InvalidCommandException,
     InvalidPlaceException,
     PlaceCommandArgs,
 )
-from src.data_classes import Direction
+from toy_robot.data_classes import Direction
 
 
 class TestCommandParser:

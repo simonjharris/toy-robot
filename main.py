@@ -3,9 +3,9 @@ import sys
 import textwrap
 from importlib.metadata import PackageNotFoundError, version
 
-from src.robot import Robot
-from src.simulator import RobotSimulator, Signal
-from src.table import Table
+from toy_robot.robot import Robot
+from toy_robot.simulator import RobotSimulator, Signal
+from toy_robot.table import Table
 
 
 def _get_version() -> str:

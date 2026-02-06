@@ -1,15 +1,15 @@
 from enum import Enum, auto
 from typing import TextIO
 
-from src.commands import (
+from toy_robot.commands import (
     Command,
     CommandParser,
     CommandParserException,
     PlaceCommandArgs,
 )
-from src.data_classes import Point
-from src.robot import Robot
-from src.table import Table
+from toy_robot.data_classes import Point
+from toy_robot.robot import Robot
+from toy_robot.table import Table
 
 
 class Signal(Enum):

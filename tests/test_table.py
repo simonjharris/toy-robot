@@ -1,7 +1,7 @@
 import pytest
 
-from src.data_classes import Point
-from src.table import Table
+from toy_robot.data_classes import Point
+from toy_robot.table import Table
 
 
 class TestTable:

@@ -2,8 +2,8 @@ import io
 
 import pytest
 
-from src.data_classes import Direction, Point
-from src.simulator import RobotSimulator, Signal
+from toy_robot.data_classes import Direction, Point
+from toy_robot.simulator import RobotSimulator, Signal
 
 
 class TestRobotSimulator:

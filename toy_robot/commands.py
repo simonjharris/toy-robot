@@ -2,7 +2,7 @@ import dataclasses
 import re
 from enum import StrEnum
 
-from src.data_classes import Direction
+from toy_robot.data_classes import Direction
 
 
 class CommandParserException(Exception):

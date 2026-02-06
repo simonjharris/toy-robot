@@ -1,9 +1,9 @@
 import pytest
 
-from src.data_classes import Direction, Point
-from src.robot import Robot
-from src.simulator import RobotSimulator
-from src.table import Table
+from toy_robot.data_classes import Direction, Point
+from toy_robot.robot import Robot
+from toy_robot.simulator import RobotSimulator
+from toy_robot.table import Table
 
 
 @pytest.fixture
